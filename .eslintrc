@@ -9,6 +9,7 @@
     "react/prefer-stateless-function": "off",
     "react/prop-types": "off",
     "react/no-did-mount-set-state": "off",
-    "no-unused-vars": "warn"
+    "no-unused-vars": "warn",
+    "no-underscore-dangle": ["error", {"allowAfterThis": true }]
   }
 }

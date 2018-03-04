@@ -6,7 +6,6 @@ import Button from './components/Button';
 import Search from './components/Search';
 import Table from './components/Table';
 
-
 const DEFAULT_QUERY = 'redux';
 const PATH_BASE = 'https://hn.algolia.com/api/v1';
 const PATH_SEARCH = '/search';
@@ -18,6 +17,8 @@ const DEFAULT_HITSPERPAGE = '10';
 class App extends Component {
   constructor(props) {
     super(props);
+
+    this._isMounted = false;
 
     this.state = {
       results: null,
@@ -35,9 +36,15 @@ class App extends Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
+
     const { searchTerm } = this.state;
     this.setState({ searchKey: searchTerm });
     this.fetchSearchTopStories(searchTerm);
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   onDismiss(id) {
@@ -102,11 +109,15 @@ class App extends Component {
 &${PARAM_PAGE}${page}\
 &${PARAM_HITSPERPAGE}${DEFAULT_HITSPERPAGE}`);
 
-      this.setSearchTopStories(response.data);
+      if (this._isMounted) {
+        this.setSearchTopStories(response.data);
+      }
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error(error);
-      this.setState({ error });
+      if (this._isMounted) {
+        // eslint-disable-next-line no-console
+        console.error(error);
+        this.setState({ error });
+      }
     }
   }
 
