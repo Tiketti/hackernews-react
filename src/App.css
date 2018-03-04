@@ -62,6 +62,10 @@ table-row {
   border-bottom: 1px solid #38BB6C;
 }
 
+button.more {
+  margin-top: 10px;
+}
+
 .largeColumn {
   width: 40%;
 }

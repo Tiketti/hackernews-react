@@ -1,10 +1,11 @@
+import axios from 'axios';
+
 import React, { Component } from 'react';
 import './App.css';
-// import Welcome from './components/Welcome';
-import Clock from './components/Clock';
 import Button from './components/Button';
 import Search from './components/Search';
 import Table from './components/Table';
+
 
 const DEFAULT_QUERY = 'redux';
 const PATH_BASE = 'https://hn.algolia.com/api/v1';
@@ -12,7 +13,7 @@ const PATH_SEARCH = '/search';
 const PARAM_SEARCH = 'query=';
 const PARAM_PAGE = 'page=';
 const PARAM_HITSPERPAGE = 'hitsPerPage=';
-const DEFAULT_HITSPERPAGE = '2';
+const DEFAULT_HITSPERPAGE = '10';
 
 class App extends Component {
   constructor(props) {
@@ -22,6 +23,7 @@ class App extends Component {
       results: null,
       searchKey: '',
       searchTerm: DEFAULT_QUERY,
+      error: null,
     };
 
     this.setSearchTopStories = this.setSearchTopStories.bind(this);
@@ -95,22 +97,27 @@ class App extends Component {
 
   async fetchSearchTopStories(searchTerm, page = 0) {
     try {
-      const response = await fetch(`${PATH_BASE}${PATH_SEARCH}\
+      const response = await axios(`${PATH_BASE}${PATH_SEARCH}\
 ?${PARAM_SEARCH}${searchTerm}\
 &${PARAM_PAGE}${page}\
 &${PARAM_HITSPERPAGE}${DEFAULT_HITSPERPAGE}`);
 
-      const result = await response.json();
-
-      this.setSearchTopStories(result);
-    } catch (e) {
+      this.setSearchTopStories(response.data);
+    } catch (error) {
       // eslint-disable-next-line no-console
-      console.error(e);
+      console.error(error);
+      this.setState({ error });
     }
   }
 
   render() {
-    const { searchTerm, results, searchKey } = this.state;
+    const {
+      searchTerm,
+      results,
+      searchKey,
+      error,
+    } = this.state;
+
     const page = (
       results &&
       results[searchKey] &&
@@ -126,12 +133,6 @@ class App extends Component {
     return (
       <div className="page">
         <div className="interactions">
-          <Button onClick={() =>
-            this.fetchSearchTopStories(searchKey, page + 1)}
-          >
-            More
-          </Button>
-          <Clock />
           <Search
             value={searchTerm}
             onChange={this.onSearchChange}
@@ -139,10 +140,24 @@ class App extends Component {
           >
           Search
           </Search>
-          <Table
-            list={list}
-            onDismiss={this.onDismiss}
-          />
+          <Button
+            className="more"
+            onClick={() =>
+              this.fetchSearchTopStories(searchKey, page + 1)
+            }
+          >
+            More
+          </Button>
+          {error ?
+            <div className="interactions">
+              <p>Something went wrong.</p>
+            </div>
+            :
+            <Table
+              list={list}
+              onDismiss={this.onDismiss}
+            />
+          }
         </div>
       </div>
     );
