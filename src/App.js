@@ -14,6 +14,8 @@ const PARAM_PAGE = 'page=';
 const PARAM_HITSPERPAGE = 'hitsPerPage=';
 const DEFAULT_HITSPERPAGE = '10';
 
+const Loading = () => <div>Loading ...</div>;
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -25,6 +27,7 @@ class App extends Component {
       searchKey: '',
       searchTerm: DEFAULT_QUERY,
       error: null,
+      isLoading: false,
     };
 
     this.setSearchTopStories = this.setSearchTopStories.bind(this);
@@ -78,6 +81,8 @@ class App extends Component {
   }
 
   setSearchTopStories(result) {
+    this.setState({ isLoading: false });
+
     const { hits, page } = result;
     const { searchKey, results } = this.state;
 
@@ -104,6 +109,8 @@ class App extends Component {
 
   async fetchSearchTopStories(searchTerm, page = 0) {
     try {
+      this.setState({ isLoading: true });
+
       const response = await axios.get(`${PATH_BASE}${PATH_SEARCH}\
 ?${PARAM_SEARCH}${searchTerm}\
 &${PARAM_PAGE}${page}\
@@ -127,6 +134,7 @@ class App extends Component {
       results,
       searchKey,
       error,
+      isLoading,
     } = this.state;
 
     const page = (
@@ -151,15 +159,19 @@ class App extends Component {
           >
           Search
           </Search>
-          <Button
-            className="more"
-            onClick={() =>
-              this.fetchSearchTopStories(searchKey, page + 1)
-            }
-          >
-            More
-          </Button>
-          {error ?
+          { isLoading ?
+            <Loading />
+            :
+            <Button
+              className="more"
+              onClick={() =>
+                this.fetchSearchTopStories(searchKey, page + 1)
+              }
+            >
+              More
+            </Button>
+          }
+          { error ?
             <div className="interactions">
               <p>Something went wrong.</p>
             </div>

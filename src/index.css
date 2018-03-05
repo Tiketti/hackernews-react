@@ -20,7 +20,7 @@ input {
   padding: 10px;
   border-radius: 5px;
   outline: none;
-  margin: 0 10px;
+  margin: 0 10px 10px 0;
   border: 1px solid #dddddd;
 }
 
