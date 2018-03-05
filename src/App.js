@@ -16,6 +16,12 @@ const DEFAULT_HITSPERPAGE = '10';
 
 const Loading = () => <div>Loading ...</div>;
 
+const withLoading = Cmpnnt => ({ isLoading, ...rest }) => (
+  isLoading ? <Loading /> : <Cmpnnt {...rest} />
+);
+
+const ButtonWithLoading = withLoading(Button);
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -159,18 +165,15 @@ class App extends Component {
           >
           Search
           </Search>
-          { isLoading ?
-            <Loading />
-            :
-            <Button
-              className="more"
-              onClick={() =>
-                this.fetchSearchTopStories(searchKey, page + 1)
-              }
-            >
-              More
-            </Button>
-          }
+          <ButtonWithLoading
+            isLoading={isLoading}
+            className="more"
+            onClick={() =>
+              this.fetchSearchTopStories(searchKey, page + 1)
+            }
+          >
+            More
+          </ButtonWithLoading>
           { error ?
             <div className="interactions">
               <p>Something went wrong.</p>
