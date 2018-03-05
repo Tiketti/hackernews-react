@@ -104,7 +104,7 @@ class App extends Component {
 
   async fetchSearchTopStories(searchTerm, page = 0) {
     try {
-      const response = await axios(`${PATH_BASE}${PATH_SEARCH}\
+      const response = await axios.get(`${PATH_BASE}${PATH_SEARCH}\
 ?${PARAM_SEARCH}${searchTerm}\
 &${PARAM_PAGE}${page}\
 &${PARAM_HITSPERPAGE}${DEFAULT_HITSPERPAGE}`);
